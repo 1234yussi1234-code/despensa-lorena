@@ -27,9 +27,9 @@
                 <span class="absolute left-3 top-2.5 text-gray-400 text-sm">🔍</span>
             </div>
 
-            <!-- Selector de Ubicación / Sucursal -->
+            <!-- Selector de Ubicación / Sucursal Actualizado -->
             <div class="bg-red-700 px-3 py-1.5 rounded-full text-xs font-semibold border border-red-500 flex items-center gap-1 shrink-0">
-                <span>📍</span> <span>Local: San Miguel de Tucumán</span>
+                <span>📍</span> <span>Av. 30 de Noviembre, 224 - San Andrés, Tucumán</span>
             </div>
         </div>
 
@@ -99,7 +99,7 @@
     </div>
 
     <script>
-       const productos = [
+        const productos = [
             { id: 1, nombre: "Formis chica", precio: 1000, categoria: "galletitas" },
             { id: 2, nombre: "Formis grande", precio: 1500, categoria: "galletitas" },
             { id: 3, nombre: "Oreo", precio: 2500, categoria: "galletitas" },
@@ -220,6 +220,7 @@
             { id: 118, nombre: "Ketchup", precio: 2100, categoria: "almacen" },
             { id: 119, nombre: "Choclo en lata", precio: 1200, categoria: "almacen" }
         ];
+
         let carrito = {}; 
         let categoriaActual = 'todos';
         const minimoParaEnvio = 15000;
@@ -371,7 +372,6 @@
             window.open(url, "_blank");
         }
 
-        // Carga inicial obligatoria
         renderizarProductos(productos);
     </script>
 </body>
