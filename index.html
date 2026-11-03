@@ -36,14 +36,14 @@
         <!-- Barra de Categorías Rápidas -->
         <div class="bg-red-700 border-t border-red-500 py-2 px-4 shadow-inner overflow-x-auto">
             <div class="max-w-6xl mx-auto flex gap-2 min-w-max">
-                <button onclick="filtrarCategoria('todos')" class="cat-btn bg-white text-red-600 px-3 py-1 rounded-full text-xs font-bold transition shadow-sm">Todos</button>
-                <button onclick="filtrarCategoria('galletitas')" class="cat-btn bg-red-800 text-white hover:bg-red-900 px-3 py-1 rounded-full text-xs font-semibold transition">🍫 Galletitas y Golosinas</button>
-                <button onclick="filtrarCategoria('panificados')" class="cat-btn bg-red-800 text-white hover:bg-red-900 px-3 py-1 rounded-full text-xs font-semibold transition">🍞 Panificados</button>
-                <button onclick="filtrarCategoria('frescos')" class="cat-btn bg-red-800 text-white hover:bg-red-900 px-3 py-1 rounded-full text-xs font-semibold transition">🧊 Congelados y Frescos</button>
-                <button onclick="filtrarCategoria('lacteos')" class="cat-btn bg-red-800 text-white hover:bg-red-900 px-3 py-1 rounded-full text-xs font-semibold transition">🧀 Lácteos y Fiambres</button>
-                <button onclick="filtrarCategoria('jugos')" class="cat-btn bg-red-800 text-white hover:bg-red-900 px-3 py-1 rounded-full text-xs font-semibold transition">🧃 Jugos y Bebidas</button>
-                <button onclick="filtrarCategoria('gaseosas')" class="cat-btn bg-red-800 text-white hover:bg-red-900 px-3 py-1 rounded-full text-xs font-semibold transition">🥤 Gaseosas y Aguas</button>
-                <button onclick="filtrarCategoria('almacen')" class="cat-btn bg-red-800 text-white hover:bg-red-900 px-3 py-1 rounded-full text-xs font-semibold transition">🛒 Almacén y Harinas</button>
+                <button onclick="filtrarCategoria('todos', this)" class="cat-btn bg-white text-red-600 px-3 py-1 rounded-full text-xs font-bold transition shadow-sm">Todos</button>
+                <button onclick="filtrarCategoria('galletitas', this)" class="cat-btn bg-red-800 text-white hover:bg-red-900 px-3 py-1 rounded-full text-xs font-semibold transition">🍫 Galletitas y Golosinas</button>
+                <button onclick="filtrarCategoria('panificados', this)" class="cat-btn bg-red-800 text-white hover:bg-red-900 px-3 py-1 rounded-full text-xs font-semibold transition">🍞 Panificados</button>
+                <button onclick="filtrarCategoria('frescos', this)" class="cat-btn bg-red-800 text-white hover:bg-red-900 px-3 py-1 rounded-full text-xs font-semibold transition">🧊 Congelados y Frescos</button>
+                <button onclick="filtrarCategoria('lacteos', this)" class="cat-btn bg-red-800 text-white hover:bg-red-900 px-3 py-1 rounded-full text-xs font-semibold transition">🧀 Lácteos y Fiambres</button>
+                <button onclick="filtrarCategoria('jugos', this)" class="cat-btn bg-red-800 text-white hover:bg-red-900 px-3 py-1 rounded-full text-xs font-semibold transition">🧃 Jugos y Bebidas</button>
+                <button onclick="filtrarCategoria('gaseosas', this)" class="cat-btn bg-red-800 text-white hover:bg-red-900 px-3 py-1 rounded-full text-xs font-semibold transition">🥤 Gaseosas y Aguas</button>
+                <button onclick="filtrarCategoria('almacen', this)" class="cat-btn bg-red-800 text-white hover:bg-red-900 px-3 py-1 rounded-full text-xs font-semibold transition">🛒 Almacén y Harinas</button>
             </div>
         </div>
     </header>
@@ -218,7 +218,7 @@
             { id: 121, nombre: "Mayonesa hellmans", precio: 1700, categoria: "almacen" },
             { id: 122, nombre: "Savora", precio: 1800, categoria: "almacen" },
             { id: 123, nombre: "Ketchup", precio: 2100, categoria: "almacen" },
-            { id: 124, nombre: "Choclo en lata", precio: 1200, categoria: "almacen" }
+            { id: 124, nombre: "Choclo en lata", emoji: "🌽", precio: 1200, categoria: "almacen" }
         ];
 
         let carrito = {}; 
@@ -264,16 +264,116 @@
             renderizarProductos(filtrados);
         }
 
-        function filtrarCategoria(categoria) {
+        function filtrarCategoria(categoria, boton) {
             categoriaActual = categoria;
             
             document.querySelectorAll('.cat-btn').forEach(btn => {
                 btn.className = "cat-btn bg-red-800 text-white hover:bg-red-900 px-3 py-1 rounded-full text-xs font-semibold transition";
             });
-            event.target.className = "cat-btn bg-white text-red-600 px-3 py-1 rounded-full text-xs font-bold transition shadow-sm";
+            boton.className = "cat-btn bg-white text-red-600 px-3 py-1 rounded-full text-xs font-bold transition shadow-sm";
 
             filtrarProductos();
         }
 
         function cambiarCantidad(idProducto, cantidadCambio) {
             if (!carrito[idProducto]) {
+                carrito[idProducto] = 0;
+            }
+            
+            let nuevaCantidad = carrito[idProducto] + cantidadCambio;
+
+            if (nuevaCantidad > stockMaximo) {
+                alert("⚠️ Límite de stock: Solo tenemos 10 unidades disponibles.");
+                return;
+            }
+
+            if (nuevaCantidad <= 0) {
+                delete carrito[idProducto];
+            } else {
+                carrito[idProducto] = nuevaCantidad;
+            }
+
+            actualizarCarrito();
+        }
+
+        function vaciarCarrito() {
+            carrito = {};
+            actualizarCarrito();
+        }
+
+        function actualizarCarrito() {
+            const lista = document.getElementById('lista-carrito');
+            let total = 0;
+            let html = '';
+
+            for (const id in carrito) {
+                const prod = productos.find(p => p.id == id);
+                const cantidad = carrito[id];
+                const subtotal = prod.precio * cantidad;
+                total += subtotal;
+
+                html += `
+                <div class="flex justify-between items-center border-b border-gray-100 pb-2">
+                    <div class="pr-2">
+                        <p class="font-medium text-gray-800 text-xs">${prod.nombre}</p>
+                        <p class="text-xs text-gray-400">$${prod.precio} x u.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="flex items-center border rounded-lg bg-gray-50 overflow-hidden">
+                            <button onclick="cambiarCantidad(${prod.id}, -1)" class="px-2 py-0.5 text-gray-600 hover:bg-gray-200 text-xs font-bold">-</button>
+                            <span class="px-2 text-xs font-bold">${cantidad}</span>
+                            <button onclick="cambiarCantidad(${prod.id}, 1)" class="px-2 py-0.5 text-gray-600 hover:bg-gray-200 text-xs font-bold">+</button>
+                        </div>
+                        <span class="font-bold text-xs text-gray-700 w-12 text-right">$${subtotal}</span>
+                    </div>
+                </div>`;
+            }
+
+            if (Object.keys(carrito).length === 0) {
+                lista.innerHTML = '<p class="italic text-gray-400 text-center py-4">El carrito está vacío.</p>';
+            } else {
+                lista.innerHTML = html;
+            }
+
+            document.getElementById('total-precio').innerText = total;
+
+            const divRetiro = document.getElementById('mensaje-retiro');
+            const divEnvio = document.getElementById('opcion-envio');
+            const faltaEnvio = document.getElementById('falta-envio');
+
+            if (total >= minimoParaEnvio) {
+                divRetiro.classList.add('hidden');
+                divEnvio.classList.remove('hidden');
+            } else {
+                divRetiro.classList.remove('hidden');
+                divEnvio.classList.add('hidden');
+                faltaEnvio.innerText = `Te faltan $${minimoParaEnvio - total} para habilitar el envío.`;
+            }
+        }
+
+        function enviarWhatsApp() {
+            let total = parseInt(document.getElementById('total-precio').innerText);
+            if (total === 0) {
+                alert("El carrito está vacío.");
+                return;
+            }
+
+            let detallePedido = "Hola, quiero confirmar este pedido:\n\n";
+            for (const id in carrito) {
+                const prod = productos.find(p => p.id == id);
+                detallePedido += `- ${carrito[id]}x ${prod.nombre} ($${prod.precio * carrito[id]})\n`;
+            }
+
+            let metodo = total >= minimoParaEnvio ? "Envío a domicilio" : "Retiro por el local";
+            detallePedido += `\n*TOTAL: $${total}*\n*Método:* ${metodo}`;
+
+            let telefono = "5493810000000"; 
+            let url = `https://wa.me/${telefono}?text=${encodeURIComponent(detallePedido)}`;
+            window.open(url, "_blank");
+        }
+
+        // Carga inicial obligatoria
+        renderizarProductos(productos);
+    </script>
+</body>
+</html>
