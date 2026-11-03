@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo | Despensa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <header class="bg-blue-600 text-white p-4 shadow-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Catálogo Online</h1>
+            <p class="font-semibold text-blue-200">Envíos a partir de $15.000</p>
+        </div>
+    </header>
+
+    <div class="max-w-6xl mx-auto p-4 flex flex-col md:flex-row gap-6 mt-4">
+        
+        <div class="md:w-2/3">
+            <h2 class="text-xl font-bold mb-4 text-gray-800">Nuestros Productos</h2>
+            <div id="contenedor-productos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Los productos se inyectan acá con JavaScript -->
+            </div>
+        </div>
+
+        <div class="md:w-1/3">
+            <div class="bg-white p-6 rounded-lg shadow-lg sticky top-24">
+                <h3 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">Tu Pedido</h3>
+                
+                <div id="lista-carrito" class="mb-4 text-sm text-gray-600 space-y-2">
+                    <p class="italic text-gray-400">El carrito está vacío.</p>
+                </div>
+
+                <div class="border-t pt-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-bold text-lg">Total:</span>
+                        <span class="font-bold text-xl text-blue-600">$<span id="total-precio">0</span></span>
+                    </div>
+
+                    <div id="mensaje-retiro" class="bg-red-100 text-red-700 p-3 rounded-md text-sm font-semibold mb-4">
+                        📍 Retiro por el local.<br>
+                        <span id="falta-envio" class="font-normal text-xs text-red-600">Te faltan $15000 para habilitar el envío.</span>
+                    </div>
+
+                    <div id="opcion-envio" class="hidden bg-green-100 text-green-700 p-3 rounded-md text-sm font-semibold mb-4">
+                        🚚 Envío a domicilio habilitado.
+                    </div>
+
+                    <button onclick="enviarWhatsApp()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-md transition duration-200">
+                        Confirmar por WhatsApp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const productos = [
+            { id: 6, nombre: "Formis chica", precio: 1000, img: "img_6.jpg" },
+            { id: 7, nombre: "Formis grande", precio: 1500, img: "img_7.jpg" },
+            { id: 8, nombre: "Oreo", precio: 2500, img: "img_8.jpg" },
+            { id: 9, nombre: "Merengadas", precio: 2000, img: "img_9.jpg" },
+            { id: 10, nombre: "Mini oreo", precio: 1500, img: "img_10.jpg" },
+            { id: 11, nombre: "Mini pepito", precio: 1500, img: "img_11.jpg" },
+            { id: 12, nombre: "Fauna", precio: 900, img: "img_12.jpg" },
+            { id: 13, nombre: "Vainilla", precio: 800, img: "img_13.jpg" },
+            { id: 14, nombre: "Sonrisa", precio: 1800, img: "img_14.jpg" },
+            { id: 15, nombre: "Cereal mix", precio: 2800, img: "img_15.jpg" },
+            { id: 16, nombre: "Diversion", precio: 3300, img: "img_16.jpg" },
+            { id: 17, nombre: "Terrabusi", precio: 3000, img: "img_17.jpg" },
+            { id: 18, nombre: "Surtida bagle", precio: 4500, img: "img_18.jpg" },
+            { id: 19, nombre: "Block y cofler", precio: 2000, img: "img_19.jpg" },
+            { id: 20, nombre: "Saladix caja", precio: 2000, img: "img_20.jpg" },
+            { id: 21, nombre: "Aguila, bon o bom", precio: 2000, img: "img_21.jpg" },
+            { id: 22, nombre: "Fantoche triple", precio: 1200, img: "img_22.jpg" },
+            { id: 23, nombre: "Pan de hamburgesa", precio: 2000, img: "img_23.jpg" },
+            { id: 24, nombre: "Pan de viena", precio: 2000, img: "img_24.jpg" },
+            { id: 25, nombre: "Pan de campo", precio: 3000, img: "img_25.jpg" },
+            { id: 26, nombre: "Prepizza", precio: 2500, img: "img_26.jpg" },
+            { id: 27, nombre: "Pan de miga", precio: 5000, img: "img_27.jpg" },
+            { id: 28, nombre: "Pizzas de Jamón", precio: 6000, img: "img_28.jpg" },
+            { id: 29, nombre: "Pizzas de ternera", precio: 7500, img: "img_29.jpg" },
+            { id: 30, nombre: "Empanadas", precio: 6500, img: "img_30.jpg" },
+            { id: 31, nombre: "Bombita de queso c/u", precio: 1600, img: "img_31.jpg" },
+            { id: 32, nombre: "Bombita de carne c/u", precio: 2000, img: "img_32.jpg" },
+            { id: 33, nombre: "Kipes x kg", precio: 7000, img: "img_33.jpg" },
+            { id: 34, nombre: "Hamburguesa iacono", precio: 1500, img: "img_34.jpg" },
+            { id: 35, nombre: "Hamburguesa switt", precio: 3500, img: "img_35.jpg" },
+            { id: 36, nombre: "Hamburguesa paladini", precio: 3200, img: "img_36.jpg" },
+            { id: 37, nombre: "Salchichas carcaraña", precio: 1500, img: "img_37.jpg" },
+            { id: 38, nombre: "Salame", precio: 1500, img: "img_38.jpg" },
+            { id: 39, nombre: "Queso en barra", precio: 1500, img: "img_39.jpg" },
+            { id: 40, nombre: "Queso cremoso", precio: 1100, img: "img_40.jpg" },
+            { id: 41, nombre: "Mortadela", precio: 1500, img: "img_41.jpg" },
+            { id: 42, nombre: "Jamón", precio: 1500, img: "img_42.jpg" },
+            { id: 43, nombre: "Queso para rallar", precio: 2200, img: "img_43.jpg" },
+            { id: 44, nombre: "Manteca tonadita", precio: 1800, img: "img_44.jpg" },
+            { id: 45, nombre: "Manteca sys", precio: 1500, img: "img_45.jpg" },
+            { id: 46, nombre: "Crema de leche manfrey", precio: 3000, img: "img_46.jpg" },
+            { id: 47, nombre: "Crema de leche milkaut", precio: 3300, img: "img_47.jpg" },
+            { id: 48, nombre: "Crema de leche serenisima", precio: 3700, img: "img_48.jpg" },
+            { id: 49, nombre: "Crema de leche las 3 niñas", precio: 2700, img: "img_49.jpg" },
+            { id: 50, nombre: "Queso untable tonadita", precio: 2600, img: "img_50.jpg" },
+            { id: 51, nombre: "Yogurt griego grande", precio: 5600, img: "img_51.jpg" },
+            { id: 52, nombre: "Yogurt griego chico", precio: 3700, img: "img_52.jpg" },
+            { id: 53, nombre: "Postresito", precio: 1300, img: "img_53.jpg" },
+            { id: 54, nombre: "Yogurt con fruta Manfrey", precio: 1500, img: "img_54.jpg" },
+            { id: 55, nombre: "Yogurt con cereal Remolac", precio: 1500, img: "img_55.jpg" },
+            { id: 56, nombre: "Jogurt de litro Manfrey y serenisima", precio: 2400, img: "img_56.jpg" },
+            { id: 57, nombre: "Leche salche silvia", precio: 2200, img: "img_57.jpg" },
+            { id: 58, nombre: "Leche salche deslactosada", precio: 2500, img: "img_58.jpg" },
+            { id: 59, nombre: "Leche salche serenisima", precio: 2300, img: "img_59.jpg" },
+            { id: 60, nombre: "Leche caja manfrey entera/descremada", precio: 2500, img: "img_60.jpg" },
+            { id: 61, nombre: "Queso cheddar", precio: 3500, img: "img_61.jpg" },
+            { id: 62, nombre: "Queso cheddar", precio: 3500, img: "img_62.jpg" },
+            { id: 63, nombre: "Leche serenisima proteina", precio: 3000, img: "img_63.jpg" },
+            { id: 64, nombre: "Pascualina madomi", precio: 2000, img: "img_64.jpg" },
+            { id: 65, nombre: "Pascualina ciciliana", precio: 1800, img: "img_65.jpg" },
+            { id: 66, nombre: "Masa de empanadas madomi", precio: 1800, img: "img_66.jpg" },
+            { id: 67, nombre: "Ravioli madomi", precio: 3000, img: "img_67.jpg" },
+            { id: 68, nombre: "Jugo baggio 1lt", precio: 2000, img: "img_68.jpg" },
+            { id: 69, nombre: "Baggio chico 200ml", precio: 800, img: "img_69.jpg" },
+            { id: 70, nombre: "Jugo Ades 1lt", precio: 2700, img: "img_70.jpg" },
+            { id: 71, nombre: "Jugo ades chico 200ml", precio: 1000, img: "img_71.jpg" },
+            { id: 72, nombre: "Jugo cepita chico 200ml", precio: 800, img: "img_72.jpg" },
+            { id: 73, nombre: "Jugo cepita botellita 300ml", precio: 1000, img: "img_73.jpg" },
+            { id: 74, nombre: "Chocolatada 1lt", precio: 3500, img: "img_74.jpg" },
+            { id: 75, nombre: "Chocolatada chica 200ml", precio: 1400, img: "img_75.jpg" },
+            { id: 76, nombre: "Jugo cepita con pulpa botella 1lt", precio: 3500, img: "img_76.jpg" },
+            { id: 77, nombre: "Monsters lata", precio: 3500, img: "img_77.jpg" },
+            { id: 78, nombre: "Speed lata", precio: 3000, img: "img_78.jpg" },
+            { id: 79, nombre: "Baggio forza botella", precio: 2000, img: "img_79.jpg" },
+            { id: 80, nombre: "Jugo fresh chico botella", precio: 1000, img: "img_80.jpg" },
+            { id: 81, nombre: "Jugo fresh 1.5lt", precio: 1800, img: "img_81.jpg" },
+            { id: 82, nombre: "Levite 1.5 lt", precio: 2600, img: "img_82.jpg" },
+            { id: 83, nombre: "Levite botella chica 500ml", precio: 1600, img: "img_83.jpg" },
+            { id: 84, nombre: "Suerox 500ml", precio: 3000, img: "img_84.jpg" },
+            { id: 85, nombre: "Pepsi chica 500ml", precio: 1500, img: "img_85.jpg" },
+            { id: 86, nombre: "Pepsi 2lt", precio: 3500, img: "img_86.jpg" },
+            { id: 87, nombre: "Seven up 2lt", precio: 3500, img: "img_87.jpg" },
+            { id: 88, nombre: "Torasso citrus 3lt", precio: 2500, img: "img_88.jpg" },
+            { id: 89, nombre: "Gaseosa winner 3lt", precio: 2000, img: "img_89.jpg" },
+            { id: 90, nombre: "Mirinda 2lt", precio: 3500, img: "img_90.jpg" },
+            { id: 91, nombre: "Powerade chico 500ml", precio: 3000, img: "img_91.jpg" },
+            { id: 92, nombre: "Fanta zero 1.5lt", precio: 4000, img: "img_92.jpg" },
+            { id: 93, nombre: "Fanta manzana/limon 2.5lt", precio: 2700, img: "img_93.jpg" },
+            { id: 94, nombre: "Aquarius 2.25lt", precio: 3300, img: "img_94.jpg" },
+            { id: 95, nombre: "Jugo cepita común 1.5lt", precio: 1800, img: "img_95.jpg" },
+            { id: 96, nombre: "Jugo cepita 3lt", precio: 2500, img: "img_96.jpg" },
+            { id: 97, nombre: "Soda benedictino", precio: 2000, img: "img_97.jpg" },
+            { id: 98, nombre: "Coca cola de 2.5lt", precio: 5000, img: "img_98.jpg" },
+            { id: 99, nombre: "Coca zero 1.5lt", precio: 4000, img: "img_99.jpg" },
+            { id: 100, nombre: "Coca retornable 2lt", precio: 4000, img: "img_100.jpg" },
+            { id: 101, nombre: "Hamburguesa friar", precio: 1300, img: "img_101.jpg" },
+            { id: 102, nombre: "Coca vidrio 1lt", precio: 3000, img: "img_102.jpg" },
+            { id: 103, nombre: "Coca vidrio 1.5", precio: 3500, img: "img_103.jpg" },
+            { id: 104, nombre: "Coca lata 220ml", precio: 1400, img: "img_104.jpg" },
+            { id: 105, nombre: "Secco 3lt", precio: 2500, img: "img_105.jpg" },
+            { id: 106, nombre: "Rockstar 500ml", precio: 1800, img: "img_106.jpg" },
+            { id: 107, nombre: "Agua 1.5lt", precio: 1200, img: "img_107.jpg" },
+            { id: 108, nombre: "Agua 500ml", precio: 500, img: "img_108.jpg" },
+            { id: 109, nombre: "Agua bidon 6.5lt", precio: 2400, img: "img_109.jpg" },
+            { id: 110, nombre: "Pan lactal", precio: 3000, img: "img_110.jpg" },
+            { id: 111, nombre: "Tostadas", precio: 1000, img: "img_111.jpg" },
+            { id: 112, nombre: "Tostadas", precio: 1000, img: "img_112.jpg" },
+            { id: 113, nombre: "Semoladas", precio: 1100, img: "img_113.jpg" },
+            { id: 114, nombre: "Oblea bon o bon", precio: 1200, img: "img_114.jpg" },
+            { id: 115, nombre: "Harina 3 cero", precio: 1200, img: "img_115.jpg" },
+            { id: 116, nombre: "Harina 4 cero", precio: 1600, img: "img_116.jpg" },
+            { id: 117, nombre: "Harina leudante", precio: 1800, img: "img_117.jpg" },
+            { id: 118, nombre: "Harina integral", precio: 1800, img: "img_118.jpg" },
+            { id: 119, nombre: "Harina para pizza", precio: 1800, img: "img_119.jpg" },
+            { id: 120, nombre: "Levadura 100gr", precio: 1800, img: "img_120.jpg" },
+            { id: 121, nombre: "Mayonesa hellmans", precio: 1700, img: "img_121.jpg" },
+            { id: 122, nombre: "Savora", precio: 1800, img: "img_122.jpg" },
+            { id: 123, nombre: "Ketchup", precio: 2100, img: "img_123.jpg" },
+            { id: 124, nombre: "Choclo en lata", precio: 1700, img: "img_124.jpg" }
+        ];
+
+        let carrito = {}; 
+        const minimoParaEnvio = 15000;
+        const stockMaximo = 10;
+
+        function renderizarProductos() {
+            const contenedor = document.getElementById('contenedor-productos');
+            let html = '';
+            
+            productos.forEach(prod => {
+                html += `
+                <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col justify-between hover:shadow-lg transition">
+                    <div class="h-40 bg-gray-200 flex flex-col items-center justify-center text-gray-500 text-sm p-4 text-center">
+                        <svg class="w-8 h-8 mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <span>Falta foto: ${prod.img}</span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-gray-800">${prod.nombre}</h3>
+                        <p class="text-blue-600 font-bold mt-1">$${prod.precio}</p>
+                        <button onclick="agregarAlCarrito(${prod.id})" class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded">
+                            Agregar
+                        </button>
+                    </div>
+                </div>`;
+            });
+            contenedor.innerHTML = html;
+        }
+
+        function agregarAlCarrito(idProducto) {
+            if (!carrito[idProducto]) {
+                carrito[idProducto] = 1;
+            } else {
+                if (carrito[idProducto] >= stockMaximo) {
+                    alert("⚠️ Límite de stock: Solo tenemos 10 unidades disponibles de este producto.");
+                    return;
+                }
+                carrito[idProducto]++;
+            }
+            actualizarCarrito();
+        }
+
+        function actualizarCarrito() {
+            const lista = document.getElementById('lista-carrito');
+            let total = 0;
+            let html = '';
+
+            for (const id in carrito) {
+                const prod = productos.find(p => p.id == id);
+                const cantidad = carrito[id];
+                const subtotal = prod.precio * cantidad;
+                total += subtotal;
+
+                html += `
+                <div class="flex justify-between border-b pb-1">
+                    <span>${cantidad}x ${prod.nombre}</span>
+                    <span class="font-semibold">$${subtotal}</span>
+                </div>`;
+            }
+
+            if (Object.keys(carrito).length === 0) {
+                lista.innerHTML = '<p class="italic text-gray-400">El carrito está vacío.</p>';
+            } else {
+                lista.innerHTML = html;
+            }
+
+            document.getElementById('total-precio').innerText = total;
+
+            const divRetiro = document.getElementById('mensaje-retiro');
+            const divEnvio = document.getElementById('opcion-envio');
+            const faltaEnvio = document.getElementById('falta-envio');
+
+            if (total >= minimoParaEnvio) {
+                divRetiro.classList.add('hidden');
+                divEnvio.classList.remove('hidden');
+            } else {
+                divRetiro.classList.remove('hidden');
+                divEnvio.classList.add('hidden');
+                faltaEnvio.innerText = `Te faltan $${minimoParaEnvio - total} para habilitar el envío.`;
+            }
+        }
+
+        function enviarWhatsApp() {
+            let total = parseInt(document.getElementById('total-precio').innerText);
+            if (total === 0) {
+                alert("El carrito está vacío.");
+                return;
+            }
+
+            let detallePedido = "Hola, quiero confirmar este pedido:\n\n";
+            for (const id in carrito) {
+                const prod = productos.find(p => p.id == id);
+                detallePedido += `- ${carrito[id]}x ${prod.nombre} ($${prod.precio * carrito[id]})\n`;
+            }
+
+            let metodo = total >= minimoParaEnvio ? "Envío a domicilio" : "Retiro por el local";
+            detallePedido += `\n*TOTAL: $${total}*\n*Método:* ${metodo}`;
+
+            let telefono = "5493810000000"; 
+            let url = `https://wa.me/${telefono}?text=${encodeURIComponent(detallePedido)}`;
+            window.open(url, "_blank");
+        }
+
+        renderizarProductos();
+    </script>
+</body>
+</html>
