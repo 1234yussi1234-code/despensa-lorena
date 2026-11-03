@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Despensa Lorena | Catálogo Online</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans">
+
+    <!-- Header Estilo Supermercado -->
+    <header class="bg-red-600 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-3">
+            <!-- Logo y Nombre -->
+            <div class="flex items-center gap-2">
+                <span class="text-3xl">🛒</span>
+                <div>
+                    <h1 class="text-xl font-black tracking-wide uppercase leading-none">Despensa Lorena</h1>
+                    <p class="text-xs text-red-200 mt-0.5">Catálogo Online</p>
+                </div>
+            </div>
+
+            <!-- Buscador Central -->
+            <div class="w-full md:w-1/2 relative">
+                <input type="text" id="input-buscador" placeholder="Buscar producto, marca..." oninput="filtrarProductos()" 
+                    class="w-full py-2 px-4 pl-10 rounded-full text-gray-800 text-sm focus:outline-none shadow-inner">
+                <span class="absolute left-3 top-2.5 text-gray-400 text-sm">🔍</span>
+            </div>
+
+            <!-- Selector de Ubicación / Sucursal -->
+            <div class="bg-red-700 px-3 py-1.5 rounded-full text-xs font-semibold border border-red-500 flex items-center gap-1 shrink-0">
+                <span>📍</span> <span>Local: San Miguel de Tucumán</span>
+            </div>
+        </div>
+
+        <!-- Barra de Categorías Rápidas -->
+        <div class="bg-red-700 border-t border-red-500 py-2 px-4 shadow-inner overflow-x-auto">
+            <div class="max-w-6xl mx-auto flex gap-2 min-w-max">
+                <button onclick="filtrarCategoria('todos')" class="cat-btn bg-white text-red-600 px-3 py-1 rounded-full text-xs font-bold transition shadow-sm">Todos</button>
+                <button onclick="filtrarCategoria('galletitas')" class="cat-btn bg-red-800 text-white hover:bg-red-900 px-3 py-1 rounded-full text-xs font-semibold transition">🍫 Galletitas y Golosinas</button>
+                <button onclick="filtrarCategoria('panificados')" class="cat-btn bg-red-800 text-white hover:bg-red-900 px-3 py-1 rounded-full text-xs font-semibold transition">🍞 Panificados</button>
+                <button onclick="filtrarCategoria('frescos')" class="cat-btn bg-red-800 text-white hover:bg-red-900 px-3 py-1 rounded-full text-xs font-semibold transition">🧊 Congelados y Frescos</button>
+                <button onclick="filtrarCategoria('lacteos')" class="cat-btn bg-red-800 text-white hover:bg-red-900 px-3 py-1 rounded-full text-xs font-semibold transition">🧀 Lácteos y Fiambres</button>
+                <button onclick="filtrarCategoria('jugos')" class="cat-btn bg-red-800 text-white hover:bg-red-900 px-3 py-1 rounded-full text-xs font-semibold transition">🧃 Jugos y Bebidas</button>
+                <button onclick="filtrarCategoria('gaseosas')" class="cat-btn bg-red-800 text-white hover:bg-red-900 px-3 py-1 rounded-full text-xs font-semibold transition">🥤 Gaseosas y Aguas</button>
+                <button onclick="filtrarCategoria('almacen')" class="cat-btn bg-red-800 text-white hover:bg-red-900 px-3 py-1 rounded-full text-xs font-semibold transition">🛒 Almacén y Harinas</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-6xl mx-auto p-4 flex flex-col md:flex-row gap-6 mt-2">
+        
+        <!-- Listado de Productos -->
+        <div class="md:w-2/3">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                    <span>📦</span> Productos Disponibles
+                </h2>
+                <span id="contador-resultados" class="text-xs text-gray-500"></span>
+            </div>
+            <div id="contenedor-productos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Se inyecta con JS -->
+            </div>
+        </div>
+
+        <!-- Carrito de Compras -->
+        <div class="md:w-1/3">
+            <div class="bg-white p-5 rounded-xl shadow-md border border-gray-100 sticky top-36">
+                <h3 class="text-lg font-bold mb-3 text-gray-800 border-b pb-2 flex justify-between items-center">
+                    <span>🛍️ Tu Carrito</span>
+                    <button onclick="vaciarCarrito()" class="text-xs text-red-500 hover:underline font-normal">Vaciar todo</button>
+                </h3>
+                
+                <div id="lista-carrito" class="mb-4 text-sm text-gray-600 space-y-3 max-h-64 overflow-y-auto pr-1">
+                    <p class="italic text-gray-400 text-center py-4">El carrito está vacío.</p>
+                </div>
+
+                <div class="border-t pt-4">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="font-bold text-gray-700 text-base">Total:</span>
+                        <span class="font-black text-2xl text-red-600">$<span id="total-precio">0</span></span>
+                    </div>
+
+                    <div id="mensaje-retiro" class="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-lg text-xs font-medium mb-4">
+                        📍 <b>Retiro por el local</b><br>
+                        <span id="falta-envio" class="text-amber-700">Te faltan $15000 para habilitar el envío a domicilio.</span>
+                    </div>
+
+                    <div id="opcion-envio" class="hidden bg-emerald-50 border border-emerald-200 text-emerald-800 p-3 rounded-lg text-xs font-semibold mb-4">
+                        🎉 ¡Envío a domicilio habilitado!
+                    </div>
+
+                    <button onclick="enviarWhatsApp()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl shadow transition duration-200 flex items-center justify-center gap-2 text-sm">
+                        <span>💬</span> Enviar pedido por WhatsApp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const productos = [
+            { id: 6, nombre: "Formis chica", precio: 1000, categoria: "galletitas" },
+            { id: 7, nombre: "Formis grande", precio: 1500, categoria: "galletitas" },
+            { id: 8, nombre: "Oreo", precio: 2500, categoria: "galletitas" },
+            { id: 9, nombre: "Merengadas", precio: 2000, categoria: "galletitas" },
+            { id: 10, nombre: "Mini oreo", precio: 1500, categoria: "galletitas" },
+            { id: 11, nombre: "Mini pepito", precio: 1500, categoria: "galletitas" },
+            { id: 12, nombre: "Fauna", precio: 900, categoria: "galletitas" },
+            { id: 13, nombre: "Vainilla", precio: 800, categoria: "galletitas" },
+            { id: 14, nombre: "Sonrisa", precio: 1800, categoria: "galletitas" },
+            { id: 15, nombre: "Cereal mix", precio: 2800, categoria: "galletitas" },
+            { id: 16, nombre: "Diversion", precio: 3300, categoria: "galletitas" },
+            { id: 17, nombre: "Terrabusi", precio: 3000, categoria: "galletitas" },
+            { id: 18, nombre: "Surtida bagle", precio: 4500, categoria: "galletitas" },
+            { id: 19, nombre: "Block y cofler", precio: 2000, categoria: "galletitas" },
+            { id: 20, nombre: "Saladix caja", precio: 2000, categoria: "galletitas" },
+            { id: 21, nombre: "Aguila, bon o bom", precio: 2000, categoria: "galletitas" },
+            { id: 22, nombre: "Fantoche triple", precio: 1200, categoria: "galletitas" },
+            { id: 23, nombre: "Pan de hamburgesa", precio: 2000, categoria: "panificados" },
+            { id: 24, nombre: "Pan de viena", precio: 2000, categoria: "panificados" },
+            { id: 25, nombre: "Pan de campo", precio: 3000, categoria: "panificados" },
+            { id: 26, nombre: "Prepizza", precio: 2500, categoria: "panificados" },
+            { id: 27, nombre: "Pan de miga", precio: 5000, categoria: "panificados" },
+            { id: 28, nombre: "Pizzas de Jamón", precio: 6000, categoria: "panificados" },
+            { id: 29, nombre: "Pizzas de ternera", precio: 7500, categoria: "panificados" },
+            { id: 30, nombre: "Empanadas", precio: 6500, categoria: "panificados" },
+            { id: 31, nombre: "Bombita de queso c/u", precio: 1600, categoria: "frescos" },
+            { id: 32, nombre: "Bombita de carne c/u", precio: 2000, categoria: "frescos" },
+            { id: 33, nombre: "Kipes x kg", precio: 7000, categoria: "frescos" },
+            { id: 34, nombre: "Hamburguesa iacono", precio: 1500, categoria: "frescos" },
+            { id: 35, nombre: "Hamburguesa switt", precio: 3500, categoria: "frescos" },
+            { id: 36, nombre: "Hamburguesa paladini", precio: 3200, categoria: "frescos" },
+            { id: 37, nombre: "Salchichas carcaraña", precio: 1500, categoria: "frescos" },
+            { id: 38, nombre: "Salame", precio: 1500, categoria: "lacteos" },
+            { id: 39, nombre: "Queso en barra", precio: 1500, categoria: "lacteos" },
+            { id: 40, nombre: "Queso cremoso", precio: 1100, categoria: "lacteos" },
+            { id: 41, nombre: "Mortadela", precio: 1500, categoria: "lacteos" },
+            { id: 42, nombre: "Jamón", precio: 1500, categoria: "lacteos" },
+            { id: 43, nombre: "Queso para rallar", precio: 2200, categoria: "lacteos" },
+            { id: 44, nombre: "Manteca tonadita", precio: 1800, categoria: "lacteos" },
+            { id: 45, nombre: "Manteca sys", precio: 1500, categoria: "lacteos" },
+            { id: 46, nombre: "Crema de leche manfrey", precio: 3000, categoria: "lacteos" },
+            { id: 47, nombre: "Crema de leche milkaut", precio: 3300, categoria: "lacteos" },
+            { id: 48, nombre: "Crema de leche serenisima", precio: 3700, categoria: "lacteos" },
+            { id: 49, nombre: "Crema de leche las 3 niñas", precio: 2700, categoria: "lacteos" },
+            { id: 50, nombre: "Queso untable tonadita", precio: 2600, categoria: "lacteos" },
+            { id: 51, nombre: "Yogurt griego grande", precio: 5600, categoria: "lacteos" },
+            { id: 52, nombre: "Yogurt griego chico", precio: 3700, categoria: "lacteos" },
+            { id: 53, nombre: "Postresito", precio: 1300, categoria: "lacteos" },
+            { id: 54, nombre: "Yogurt con fruta Manfrey", precio: 1500, categoria: "lacteos" },
+            { id: 55, nombre: "Yogurt con cereal Remolac", precio: 1500, categoria: "lacteos" },
+            { id: 56, nombre: "Jogurt de litro Manfrey y serenisima", precio: 2400, categoria: "lacteos" },
+            { id: 57, nombre: "Leche salche silvia", precio: 2200, categoria: "lacteos" },
+            { id: 58, nombre: "Leche salche deslactosada", precio: 2500, categoria: "lacteos" },
+            { id: 59, nombre: "Leche salche serenisima", precio: 2300, categoria: "lacteos" },
+            { id: 60, nombre: "Leche caja manfrey entera/descremada", precio: 2500, categoria: "lacteos" },
+            { id: 61, nombre: "Queso cheddar", precio: 3500, categoria: "lacteos" },
+            { id: 62, nombre: "Queso cheddar", precio: 3500, categoria: "lacteos" },
+            { id: 63, nombre: "Leche serenisima proteina", precio: 3000, categoria: "lacteos" },
+            { id: 64, nombre: "Pascualina madomi", precio: 2000, categoria: "panificados" },
+            { id: 65, nombre: "Pascualina ciciliana", precio: 1800, categoria: "panificados" },
+            { id: 66, nombre: "Masa de empanadas madomi", precio: 1800, categoria: "panificados" },
+            { id: 67, nombre: "Ravioli madomi", precio: 3000, categoria: "frescos" },
+            { id: 68, nombre: "Jugo baggio 1lt", precio: 2000, categoria: "jugos" },
+            { id: 69, nombre: "Baggio chico 200ml", precio: 800, categoria: "jugos" },
+            { id: 70, nombre: "Jugo Ades 1lt", precio: 2700, categoria: "jugos" },
+            { id: 71, nombre: "Jugo ades chico 200ml", precio: 1000, categoria: "jugos" },
+            { id: 72, nombre: "Jugo cepita chico 200ml", precio: 800, categoria: "jugos" },
+            { id: 73, nombre: "Jugo cepita botellita 300ml", precio: 1000, categoria: "jugos" },
+            { id: 74, nombre: "Chocolatada 1lt", precio: 3500, categoria: "lacteos" },
+            { id: 75, nombre: "Chocolatada chica 200ml", precio: 1400, categoria: "lacteos" },
+            { id: 76, nombre: "Jugo cepita con pulpa botella 1lt", precio: 3500, categoria: "jugos" },
+            { id: 77, nombre: "Monsters lata", precio: 3500, categoria: "gaseosas" },
+            { id: 78, nombre: "Speed lata", precio: 3000, categoria: "gaseosas" },
+            { id: 79, nombre: "Baggio forza botella", precio: 2000, categoria: "jugos" },
+            { id: 80, nombre: "Jugo fresh chico botella", precio: 1000, categoria: "jugos" },
+            { id: 81, nombre: "Jugo fresh 1.5lt", precio: 1800, categoria: "jugos" },
+            { id: 82, nombre: "Levite 1.5 lt", precio: 2600, categoria: "gaseosas" },
+            { id: 83, nombre: "Levite botella chica 500ml", precio: 1600, categoria: "gaseosas" },
+            { id: 84, nombre: "Suerox 500ml", precio: 3000, categoria: "gaseosas" },
+            { id: 85, nombre: "Pepsi chica 500ml", precio: 1500, categoria: "gaseosas" },
+            { id: 86, nombre: "Pepsi 2lt", precio: 3500, categoria: "gaseosas" },
+            { id: 87, nombre: "Seven up 2lt", precio: 3500, categoria: "gaseosas" },
+            { id: 88, nombre: "Torasso citrus 3lt", precio: 2500, categoria: "gaseosas" },
+            { id: 89, nombre: "Gaseosa winner 3lt", precio: 2000, categoria: "gaseosas" },
+            { id: 90, nombre: "Mirinda 2lt", precio: 3500, categoria: "gaseosas" },
+            { id: 91, nombre: "Powerade chico 500ml", precio: 3000, categoria: "gaseosas" },
+            { id: 92, nombre: "Fanta zero 1.5lt", precio: 4000, categoria: "gaseosas" },
+            { id: 93, nombre: "Fanta manzana/limon 2.5lt", precio: 2700, categoria: "gaseosas" },
+            { id: 94, nombre: "Aquarius 2.25lt", precio: 3300, categoria: "gaseosas" },
+            { id: 95, nombre: "Jugo cepita común 1.5lt", precio: 1800, categoria: "jugos" },
+            { id: 96, nombre: "Jugo cepita 3lt", precio: 2500, categoria: "jugos" },
+            { id: 97, nombre: "Soda benedictino", precio: 2000, categoria: "gaseosas" },
+            { id: 98, nombre: "Coca cola de 2.5lt", precio: 5000, categoria: "gaseosas" },
+            { id: 99, nombre: "Coca zero 1.5lt", precio: 4000, categoria: "gaseosas" },
+            { id: 100, nombre: "Coca retornable 2lt", precio: 4000, categoria: "gaseosas" },
+            { id: 101, nombre: "Hamburguesa friar", precio: 1300, categoria: "frescos" },
+            { id: 102, nombre: "Coca vidrio 1lt", precio: 3000, categoria: "gaseosas" },
+            { id: 103, nombre: "Coca vidrio 1.5", precio: 3500, categoria: "gaseosas" },
+            { id: 104, nombre: "Coca lata 220ml", precio: 1400, categoria: "gaseosas" },
+            { id: 105, nombre: "Secco 3lt", precio: 2500, categoria: "gaseosas" },
+            { id: 106, nombre: "Rockstar 500ml", precio: 1800, categoria: "gaseosas" },
+            { id: 107, nombre: "Agua 1.5lt", precio: 1200, categoria: "gaseosas" },
+            { id: 108, nombre: "Agua 500ml", precio: 500, categoria: "gaseosas" },
+            { id: 109, nombre: "Agua bidon 6.5lt", precio: 2400, categoria: "gaseosas" },
+            { id: 110, nombre: "Pan lactal", precio: 3000, categoria: "panificados" },
+            { id: 111, nombre: "Tostadas", precio: 1000, categoria: "panificados" },
+            { id: 112, nombre: "Tostadas", precio: 1000, categoria: "panificados" },
+            { id: 113, nombre: "Semoladas", precio: 1100, categoria: "panificados" },
+            { id: 114, nombre: "Oblea bon o bon", precio: 1200, categoria: "galletitas" },
+            { id: 115, nombre: "Harina 3 cero", precio: 1200, categoria: "almacen" },
+            { id: 116, nombre: "Harina 4 cero", precio: 1600, categoria: "almacen" },
+            { id: 117, nombre: "Harina leudante", precio: 1800, categoria: "almacen" },
+            { id: 118, nombre: "Harina integral", precio: 1800, categoria: "almacen" },
+            { id: 119, nombre: "Harina para pizza", precio: 1800, categoria: "almacen" },
+            { id: 120, nombre: "Levadura 100gr", precio: 1800, categoria: "almacen" },
+            { id: 121, nombre: "Mayonesa hellmans", precio: 1700, categoria: "almacen" },
+            { id: 122, nombre: "Savora", precio: 1800, categoria: "almacen" },
+            { id: 123, nombre: "Ketchup", precio: 2100, categoria: "almacen" },
+            { id: 124, nombre: "Choclo en lata", precio: 1200, categoria: "almacen" }
+        ];
+
+        let carrito = {}; 
+        let categoriaActual = 'todos';
+        const minimoParaEnvio = 15000;
+        const stockMaximo = 10;
+
+        function renderizarProductos(listaAProcesar) {
+            const contenedor = document.getElementById('contenedor-productos');
+            let html = '';
+            
+            listaAProcesar.forEach(prod => {
+                html += `
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col justify-between hover:shadow-md transition">
+                    <div class="h-36 bg-gray-100 overflow-hidden flex items-center justify-center p-2">
+                        <img src="img/${prod.id}.webp" alt="${prod.nombre}" class="w-full h-full object-contain" 
+                             onerror="this.onerror=function(){this.onerror=function(){this.src='https://images.unsplash.com/photo-1584776296944-ab6fb57b0bdd?w=300&auto=format&fit=crop&q=60';};this.src='img/${prod.id}.png';};this.src='img/${prod.id}.jpg';">
+                    </div>
+                    <div class="p-3 flex flex-col justify-between flex-grow">
+                        <div>
+                            <h3 class="font-semibold text-gray-800 text-sm leading-tight">${prod.nombre}</h3>
+                            <p class="text-red-600 font-bold text-base mt-1">$${prod.precio}</p>
+                        </div>
+                        <button onclick="cambiarCantidad(${prod.id}, 1)" class="mt-3 w-full bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2 rounded-lg transition">
+                            Agregar al carrito
+                        </button>
+                    </div>
+                </div>`;
+            });
+            contenedor.innerHTML = html;
+            document.getElementById('contador-resultados').innerText = `${listaAProcesar.length} productos`;
+        }
+
+        function filtrarProductos() {
+            const texto = document.getElementById('input-buscador').value.toLowerCase();
+            
+            let filtrados = productos.filter(prod => {
+                const coincideTexto = prod.nombre.toLowerCase().includes(texto);
+                const coincideCat = (categoriaActual === 'todos' || prod.categoria === categoriaActual);
+                return coincideTexto && coincideCat;
+            });
+
+            renderizarProductos(filtrados);
+        }
+
+        function filtrarCategoria(categoria) {
+            categoriaActual = categoria;
+            
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.className = "cat-btn bg-red-800 text-white hover:bg-red-900 px-3 py-1 rounded-full text-xs font-semibold transition";
+            });
+            event.target.className = "cat-btn bg-white text-red-600 px-3 py-1 rounded-full text-xs font-bold transition shadow-sm";
+
+            filtrarProductos();
+        }
+
+        function cambiarCantidad(idProducto, cantidadCambio) {
+            if (!carrito[idProducto]) {
